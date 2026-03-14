@@ -17,6 +17,34 @@ const db = firebase.database();
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBWbYTXLmIYrtPHt5BaS62jRBAVDmZI13M",
+    authDomain: "robaturno.firebaseapp.com",
+    projectId: "robaturno",
+    storageBucket: "robaturno.firebasestorage.app",
+    messagingSenderId: "219360577151",
+    appId: "1:219360577151:web:9296f1fc95ea342fd1214a",
+    databaseURL: "https://robaturno-default-rtdb.firebaseio.com"
+  };
+  
+  // Encendemos Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // "La Antena": Escucha si alguien roba el turno en otro celular
+  db.ref('partida/turnoActual').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data && typeof setS === 'function') {
+      let s = getS();
+      s.d = data.dueno;
+      setS(s); // Actualiza tu lógica interna
+      if(typeof renderUI === 'function') renderUI(); // Refresca la pantalla
+    }
+  });
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
