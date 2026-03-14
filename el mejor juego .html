@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.container{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);width:100%;max-width:480px;border-radius:24px;padding:32px;box-shadow:0 25px 60px rgba(0,0,0,0.5);color:white;}
+h1{font-family:'Fredoka One',cursive;font-size:2.2rem;text-align:center;background:linear-gradient(90deg,#f7971e,#ffd200,#f7971e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px;margin-bottom:4px;}
+.subtitle{text-align:center;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:4px;}
+.credit{text-align:center;font-size:0.8rem;margin-bottom:20px;background:linear-gradient(90deg,#c084fc,#f7971e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;}
+h3{font-size:1rem;color:#ffd200;margin-bottom:12px;}
+.field{margin-bottom:14px;}
+label{display:block;font-size:0.78rem;color:rgba(255,255,255,0.6);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;}
+input,select{width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-family:'Nunito',sans-serif;font-size:0.95rem;outline:none;}
+select option{background:#1a1a2e;color:white;}
+.intel-group{display:flex;gap:8px;}
+.intel-btn{flex:1;padding:10px 8px;border-radius:10px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;text-align:center;transition:all 0.2s;}
+.intel-btn.selected{background:linear-gradient(135deg,#f7971e,#ffd200)!important;border-color:#ffd200!important;color:#1a1a2e!important;}
+.no-intel-msg{display:none;background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);border-radius:10px;padding:10px 14px;font-size:0.85rem;color:#ff9a9a;margin-top:8px;}
+.btn-main{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#f7971e,#ffd200);color:#1a1a2e;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;margin-top:8px;box-shadow:0 4px 20px rgba(247,151,30,0.4);transition:transform 0.1s;}
+.btn-main:active{transform:scale(0.97);}
+.btn-main:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-sec{width:100%;padding:11px;border:2px solid rgba(255,255,255,0.2);border-radius:12px;background:transparent;color:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;margin-top:8px;position:relative;overflow:hidden;transition:all 0.2s;}
+.btn-sec:disabled{opacity:0.5;cursor:not-allowed;}
+.cooldown-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#c084fc,#f7971e);width:0%;}
+.btn-robar{width:100%;padding:11px;border:2px solid rgba(231,76,60,0.5);border-radius:12px;background:rgba(231,76,60,0.1);color:#ff6b6b;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;margin-top:8px;transition:all 0.2s;}
+.btn-robar:active{transform:scale(0.97);}
+.btn-robar:disabled{opacity:0.3;cursor:not-allowed;}
+.result-card{background:rgba(247,151,30,0.1);border:1px solid rgba(247,151,30,0.3);border-radius:14px;padding:16px;margin-bottom:14px;font-size:0.88rem;line-height:1.8;color:rgba(255,255,255,0.85);}
+.result-card span{color:#ffd200;font-weight:700;}
+.animal-card{background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(168,85,247,0.2));border:1px solid rgba(168,85,247,0.4);border-radius:14px;padding:14px;margin-bottom:14px;text-align:center;}
+.animal-emoji-big{font-size:3rem;display:block;margin-bottom:4px;animation:bounce 1s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-8px);}}
+.animal-name{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#c084fc;margin-bottom:2px;}
+.animal-desc{color:rgba(255,255,255,0.55);font-size:0.8rem;}
+.turno-display{text-align:center;padding:18px;background:rgba(255,255,255,0.04);border-radius:16px;margin-bottom:12px;border:2px solid rgba(255,255,255,0.08);transition:all 0.4s;}
+.turno-display.verde{border-color:#34d399;background:rgba(52,211,153,0.08);box-shadow:0 0 20px rgba(52,211,153,0.25);}
+.turno-display.rojo{border-color:#e74c3c;background:rgba(231,76,60,0.12);box-shadow:0 0 25px rgba(231,76,60,0.4);animation:shake 0.4s;}
+@keyframes shake{0%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}100%{transform:translateX(0);}}
+.turno-num{font-family:'Fredoka One',cursive;font-size:2.2rem;transition:all 0.3s;}
+.turno-num.verde-txt{color:#34d399;}.turno-num.rojo-txt{color:#e74c3c;}.turno-num.neutro-txt{color:#ffd200;}
+.espera-txt{font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:4px;}
+.dueno-txt{font-size:0.85rem;color:rgba(255,255,255,0.6);margin-top:6px;}
+.dueno-txt span{color:#ffd200;font-weight:700;}
+.stats-row{display:flex;gap:8px;margin-bottom:12px;}
+.stat-box{flex:1;background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.25);border-radius:10px;padding:10px;text-align:center;}
+.stat-num{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#e74c3c;}
+.stat-lbl{font-size:0.68rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.5px;}
+.notifs{max-height:120px;overflow-y:auto;margin-top:10px;}
+.notif-item{background:rgba(52,211,153,0.08);border-left:3px solid #34d399;border-radius:0 8px 8px 0;padding:7px 10px;font-size:0.78rem;color:rgba(255,255,255,0.75);margin-bottom:5px;animation:slideIn 0.3s ease;}
+.notif-robo{background:rgba(231,76,60,0.1)!important;border-left-color:#e74c3c!important;}
+@keyframes slideIn{from{transform:translateX(-20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* BOTÓN PROTEGER */
+.proteger-btn{width:100%;padding:11px;border-radius:12px;border:2px dashed rgba(52,211,153,0.4);background:rgba(52,211,153,0.08);color:#34d399;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:8px;user-select:none;touch-action:none;transition:all 0.3s;}
+.proteger-btn.c1{border-color:#ffd200;background:rgba(255,210,0,0.1);color:#ffd200;border-style:solid;}
+.proteger-btn.c2{border-color:orange;background:rgba(255,140,0,0.15);color:orange;border-style:solid;animation:pulseO 0.4s infinite alternate;}
+.proteger-btn.c3{border-color:#e74c3c;background:rgba(231,76,60,0.2);color:#ff6b6b;border-style:solid;animation:pulseR 0.3s infinite alternate;}
+.proteger-btn.c4{border-color:red;background:rgba(255,0,0,0.22);color:#ff4444;border-style:solid;animation:pulseF 0.2s infinite alternate;}
+@keyframes pulseO{from{box-shadow:0 0 5px rgba(255,140,0,0.3);}to{box-shadow:0 0 20px rgba(255,140,0,0.7);}}
+@keyframes pulseR{from{box-shadow:0 0 8px rgba(231,76,60,0.4);}to{box-shadow:0 0 25px rgba(231,76,60,0.9);}}
+@keyframes pulseF{from{box-shadow:0 0 10px red,0 0 20px orange;}to{box-shadow:0 0 30px red,0 0 60px orange,0 0 90px yellow;}}
+.calor-meter{margin-top:6px;display:none;}
+.calor-bar-wrap{background:rgba(255,255,255,0.08);border-radius:10px;height:12px;overflow:hidden;}
+.calor-bar{height:100%;width:0%;border-radius:10px;transition:width 0.3s,background 0.3s;}
+.calor-label{font-size:0.75rem;text-align:center;margin-top:4px;font-weight:700;}
+.defensa-txt{font-size:0.8rem;color:#34d399;text-align:center;min-height:20px;margin-top:6px;}
+
+/* AVIÓN PROB */
+.avion-prob-section{margin-top:8px;background:rgba(231,76,60,0.07);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:10px 14px;display:none;}
+.avion-prob-label{font-size:0.73rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;}
+.avion-prob-track{background:rgba(255,255,255,0.08);border-radius:10px;height:12px;overflow:hidden;}
+.avion-prob-fill{height:100%;background:linear-gradient(90deg,#e74c3c,#f7971e,#ffd200);border-radius:10px;width:0%;transition:width 0.5s;}
+.avion-prob-val{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#f7971e;margin-top:3px;}
+
+.ranking-box{background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;font-size:0.82rem;color:rgba(255,255,255,0.6);margin-top:10px;border:1px solid rgba(255,255,255,0.06);}
+.ranking-title{font-family:'Fredoka One',cursive;color:#ffd200;font-size:1rem;margin-bottom:6px;}
+.ia-bubble{background:rgba(192,132,252,0.1);border:1px solid rgba(192,132,252,0.3);border-radius:14px;padding:12px 14px;margin-top:8px;font-size:0.88rem;color:#e2c9ff;line-height:1.5;display:none;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{transform:translateY(6px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.ia-dots{display:none;text-align:center;padding:8px;color:rgba(255,255,255,0.4);font-size:1.2rem;animation:dotBlink 0.8s infinite;}
+@keyframes dotBlink{0%,100%{opacity:0.3;}50%{opacity:1;}}
+.prob-section{margin-top:10px;background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.25);border-radius:12px;padding:10px 14px;}
+.prob-label{font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;}
+.prob-bar-wrap{background:rgba(255,255,255,0.08);border-radius:10px;height:14px;overflow:hidden;}
+.prob-bar{height:100%;background:linear-gradient(90deg,#f7971e,#ffd200,orange);border-radius:10px;transition:width 0.6s;}
+.prob-val{font-family:'Fredoka One',cursive;font-size:1rem;color:orange;margin-top:4px;}
+
+/* GOKU */
+.goku-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;overflow:hidden;}
+.goku-overlay.show{display:block;}
+.goku-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,#ff8800 0%,#cc0000 40%,#000 80%);opacity:0;transition:opacity 0.3s;}
+.goku-overlay.show .goku-bg{opacity:1;}
+.goku-rays{position:absolute;top:50%;left:50%;width:300%;height:300%;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(255,220,0,0.18) 0deg 8deg,transparent 8deg 18deg);animation:raysSpin 2s linear infinite;}
+@keyframes raysSpin{from{transform:translate(-50%,-50%) rotate(0deg);}to{transform:translate(-50%,-50%) rotate(360deg);}}
+.goku-particles{position:absolute;inset:0;pointer-events:none;}
+.goku-particle{position:absolute;border-radius:50%;animation:particleFly 1.5s ease-out infinite;}
+@keyframes particleFly{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0;}}
+.goku-content{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
+.goku-char{font-size:7rem;animation:gokuPower 0.4s infinite alternate;}
+@keyframes gokuPower{from{transform:scale(1) translateY(0);filter:drop-shadow(0 0 20px yellow) drop-shadow(0 0 50px orange);}to{transform:scale(1.08) translateY(-12px);filter:drop-shadow(0 0 50px white) drop-shadow(0 0 100px yellow) drop-shadow(0 0 150px orange);}}
+.goku-title{font-family:'Fredoka One',cursive;font-size:3rem;color:white;text-shadow:0 0 15px yellow,0 0 30px orange,0 0 60px red;margin:8px 0;text-align:center;animation:titleShake 0.15s infinite alternate;}
+@keyframes titleShake{from{transform:skewX(-2deg) scale(1);}to{transform:skewX(2deg) scale(1.03);}}
+.goku-subtxt{color:rgba(255,255,200,0.9);font-size:1rem;text-align:center;margin-bottom:14px;font-weight:700;text-shadow:0 0 8px orange;}
+.goku-bar-wrap{width:320px;max-width:90vw;background:rgba(0,0,0,0.5);border-radius:20px;height:24px;overflow:hidden;border:2px solid rgba(255,200,0,0.6);margin:0 auto 10px;box-shadow:0 0 15px rgba(255,200,0,0.4);}
+.goku-bar{height:100%;background:linear-gradient(90deg,#ff2200,#ff8800,#ffdd00,#ffffff);border-radius:20px;width:0%;box-shadow:0 0 15px yellow;}
+.goku-status{color:rgba(255,255,200,0.9);font-size:1rem;font-weight:700;text-align:center;text-shadow:0 0 8px orange;min-height:28px;}
+.goku-flash{position:fixed;inset:0;background:white;z-index:10000;pointer-events:none;opacity:0;}
+.goku-flash.boom{animation:flashBoom 0.25s ease-out forwards;}
+@keyframes flashBoom{0%{opacity:1;}100%{opacity:0;}}
+
+/* AVIÓN */
+.avion-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:998;align-items:center;justify-content:center;flex-direction:column;}
+.avion-overlay.show{display:flex;}
+@keyframes avionCae{0%{transform:translateY(-100px) translateX(-60px) rotate(-20deg);opacity:1;}85%{transform:translateY(40px) translateX(40px) rotate(85deg);opacity:1;}100%{transform:translateY(40px) translateX(40px) rotate(85deg);opacity:0;}}
+.avion-emoji{font-size:5rem;text-align:center;animation:avionCae 1.8s ease-in forwards;}
+.avion-explosion{font-size:6rem;display:none;text-align:center;animation:explota 0.6s ease-out forwards;}
+@keyframes explota{0%{transform:scale(0.1);opacity:0;}50%{transform:scale(1.8);opacity:1;}100%{transform:scale(1.2);opacity:1;}}
+.avion-msg{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#f7971e;margin-top:16px;text-align:center;display:none;}
+.avion-sub{color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:6px;text-align:center;display:none;}
+
+/* BLOQUEADO */
+.bloqueado-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:997;align-items:center;justify-content:center;}
+.bloqueado-overlay.show{display:flex;}
+.bloq-content{background:rgba(231,76,60,0.2);border:2px solid #e74c3c;border-radius:20px;padding:28px;text-align:center;max-width:320px;}
+.bloq-emoji{font-size:4rem;margin-bottom:10px;}
+.bloq-title{font-family:'Fredoka One',cursive;font-size:1.8rem;color:#ff6b6b;margin-bottom:8px;}
+.bloq-txt{color:rgba(255,255,255,0.7);font-size:0.9rem;margin-bottom:14px;}
+.bloq-bar-wrap{background:rgba(255,255,255,0.1);border-radius:10px;height:14px;overflow:hidden;margin-bottom:8px;}
+.bloq-bar{height:100%;background:linear-gradient(90deg,#e74c3c,#f7971e);border-radius:10px;width:100%;}
+.bloq-tiempo{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#f7971e;}
+#turnos{display:none;}
+</style>
+</head>
+<body>
+
+<div class="goku-overlay" id="gokuOverlay">
+  <div class="goku-bg"></div>
+  <div class="goku-rays"></div>
+  <div class="goku-particles" id="gokuParticles"></div>
+  <div class="goku-content">
+    <div class="goku-char">⚡</div>
+    <div class="goku-title">¡HOLA, SOY GOKU!</div>
+    <div class="goku-subtxt" id="gokuSubTxt">Detecté demasiadas peleas aquí...</div>
+    <div class="goku-bar-wrap"><div class="goku-bar" id="gokuBar"></div></div>
+    <div class="goku-status" id="gokuStatus">Cargando Genkidama...</div>
+  </div>
+</div>
+<div class="goku-flash" id="gokuFlash"></div>
+
+<div class="avion-overlay" id="avionOverlay">
+  <div class="avion-emoji" id="avionEmoji">✈️</div>
+  <div class="avion-explosion" id="avionExp">💥</div>
+  <div class="avion-msg" id="avionMsg"></div>
+  <div class="avion-sub" id="avionSub"></div>
+</div>
+
+<div class="bloqueado-overlay" id="bloqOverlay">
+  <div class="bloq-content">
+    <div class="bloq-emoji">🚫✈️</div>
+    <div class="bloq-title">¡BLOQUEADO!</div>
+    <div class="bloq-txt" id="bloqTxt">El avión te bloqueó. Espera antes de seguir.</div>
+    <div class="bloq-bar-wrap"><div class="bloq-bar" id="bloqBar"></div></div>
+    <div class="bloq-tiempo" id="bloqTiempo">15s</div>
+  </div>
+</div>
+
+<div class="container">
+  <h1>🎟️ RoboTurno AI</h1>
+  <p class="subtitle">Sistema multijugador de gestión de filas™</p>
+  <p class="credit">✨ Hecho por el guapetón Diomar ✨</p>
+
+  <div id="formulario">
+    <h3>📋 Formulario Obligatorio</h3>
+    <div class="field"><label>Tu nombre</label><input id="nombre" placeholder="Escribe tu nombre..."></div>
+    <div class="field">
+      <label>Género</label>
+      <select id="genero"><option>Hombre</option><option>Mujer</option><option>Prefiero no decir</option></select>
+    </div>
+    <div class="field"><label>Edad</label><input id="edad" placeholder="Tu edad..."></div>
+    <div class="field"><label>Tu país</label><input id="pais" placeholder="País de origen..."></div>
+    <div class="field">
+      <label>Motivo de visita</label>
+      <select id="motivo">
+        <option>Consulta</option><option>Reclamo</option><option>Preguntar algo</option>
+        <option>No sé bien</option><option>No sé qué hago con mi vida</option>
+        <option>No sé por qué estoy aquí</option><option>Me mandaron y no sé a qué</option>
+        <option>Vine a ver qué había</option><option>Me perdí y entré aquí</option>
+        <option>Aburrimiento extremo</option><option>Crisis existencial leve</option>
+        <option>Crisis existencial grave</option><option>Evitar hablar con personas</option>
+        <option>El wifi de mi casa no funciona</option><option>Quería salir de casa</option>
+        <option>Busco sentido a mi existencia</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>🧠 ¿Qué tan inteligente eres?</label>
+      <div class="intel-group">
+        <button type="button" class="intel-btn" id="intel-mucho" onclick="elegirIntel('mucho')">🧠 Mucho</button>
+        <button type="button" class="intel-btn" id="intel-normal" onclick="elegirIntel('normal')">🙂 Normal</button>
+        <button type="button" class="intel-btn" id="intel-poco" onclick="elegirIntel('poco')">🐔 Poco</button>
+      </div>
+      <div class="no-intel-msg" id="noIntelMsg"></div>
+    </div>
+    <button class="btn-main" onclick="confirmar()">✅ Aceptar</button>
+  </div>
+
+  <div id="turnos">
+    <div class="result-card" id="resultados"></div>
+    <div class="animal-card" id="animalCard" style="display:none">
+      <span class="animal-emoji-big" id="animalEmojiBig"></span>
+      <div class="animal-name" id="animalNombre"></div>
+      <div class="animal-desc" id="animalDesc"></div>
+    </div>
+
+    <div class="turno-display" id="turnoDisplay">
+      <div class="turno-num neutro-txt" id="turno">— Sin turno —</div>
+      <div class="dueno-txt" id="duenoTxt">Nadie tiene el turno aún</div>
+      <div class="espera-txt" id="espera"></div>
+    </div>
+
+    <button class="btn-main" id="btnSacar" onclick="sacarTurno()">🎲 Sacar turno</button>
+    <button class="btn-robar" id="btnRobar" onclick="robarTurno()" disabled>🤜 Robarle el turno</button>
+    <button class="btn-sec" id="btnIA" onclick="analizarIA()">🤖 Analizar turno con IA <div class="cooldown-bar" id="cooldownBar"></div></button>
+    <div class="ia-dots" id="iaDots">● ● ●</div>
+    <div class="ia-bubble" id="iaBubble"></div>
+
+    <button class="proteger-btn" id="protegerBtn">🛡️ Mantener para proteger turno</button>
+    <div class="calor-meter" id="calorMeter">
+      <div class="calor-bar-wrap"><div class="calor-bar" id="calorBar"></div></div>
+      <div class="calor-label" id="calorLabel">🌡️ Tibio</div>
+    </div>
+    <div class="defensa-txt" id="defensa"></div>
+
+    <!-- Prob avión (solo aparece desde nivel 8) -->
+    <div class="avion-prob-section" id="avionProbSec">
+      <div class="avion-prob-label">✈️ Esto me recuerda un 11 de septiembre esperaras 2001 segundos (por proteger demasiado)</div>
+      <div class="avion-prob-track"><div class="avion-prob-fill" id="avionProbFill"></div></div>
+      <div class="avion-prob-val" id="avionProbVal">0%</div>
+    </div>
+
+    <div class="stats-row" style="margin-top:12px;">
+      <div class="stat-box"><div class="stat-num" id="robosNum">0</div><div class="stat-lbl">Robados</div></div>
+      <div class="stat-box"><div class="stat-num" id="peleasNum">0</div><div class="stat-lbl">Peleas</div></div>
+    </div>
+
+    <div class="prob-section">
+      <div class="prob-label">⚡ Probabilidad de que aparezca Goku</div>
+      <div class="prob-bar-wrap"><div class="prob-bar" id="probBar" style="width:0%"></div></div>
+      <div class="prob-val" id="probVal">0%</div>
+    </div>
+
+    <div class="ranking-box">
+      <div class="ranking-title">🏆 Último ladrón</div>
+      <div id="ranking">Nadie aún...</div>
+    </div>
+    <div class="notifs" id="notificaciones"></div>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// AUDIO — un solo AudioContext, creado al primer gesto
+// =========================================================
+let _ctx = null;
+function ctx(){
+  if(!_ctx){
+    try{ _ctx = new(window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if(_ctx.state==='suspended') _ctx.resume();
+  return _ctx;
+}
+
+// Funciones base
+function osc(freq,type,start,dur,gain,c){
+  const ac=c||ctx(); if(!ac) return;
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.connect(g); g.connect(ac.destination);
+  o.type=type||'sine';
+  o.frequency.setValueAtTime(freq, ac.currentTime+start);
+  g.gain.setValueAtTime(gain||0.15, ac.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+start+dur);
+  o.start(ac.currentTime+start);
+  o.stop(ac.currentTime+start+dur+0.01);
+}
+function oscRamp(f1,f2,type,start,dur,gain){
+  const ac=ctx(); if(!ac) return;
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.connect(g); g.connect(ac.destination);
+  o.type=type||'sine';
+  o.frequency.setValueAtTime(f1, ac.currentTime+start);
+  o.frequency.exponentialRampToValueAtTime(f2, ac.currentTime+start+dur);
+  g.gain.setValueAtTime(gain||0.15, ac.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+start+dur);
+  o.start(ac.currentTime+start);
+  o.stop(ac.currentTime+start+dur+0.01);
+}
+function noise(dur,gain,start){
+  const ac=ctx(); if(!ac) return;
+  const sr=ac.sampleRate;
+  const buf=ac.createBuffer(1,Math.floor(sr*dur),sr);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(sr*(dur*0.25)));
+  const s=ac.createBufferSource(), g=ac.createGain();
+  s.buffer=buf; s.connect(g); g.connect(ac.destination);
+  g.gain.setValueAtTime(gain||0.4, ac.currentTime+(start||0));
+  s.start(ac.currentTime+(start||0));
+}
+
+// =========================================================
+// SONIDOS CONCRETOS — todos con delay 0 al llamarse
+// =========================================================
+function sndClick(){ oscRamp(500,280,'square',0,0.07,0.1); }
+function sndSel(){   oscRamp(880,1200,'sine',0,0.08,0.12); }
+function sndConfirm(){
+  // acorde de 3 notas en secuencia inmediata
+  [0,0.10,0.20].forEach((d,i)=>{
+    oscRamp([523,659,784][i],[600,720,900][i],'triangle',d,0.18,0.18);
+  });
+}
+function sndTurnoPropio(){
+  // fanfarrita de 4 notas
+  [523,659,784,1047].forEach((f,i)=>{
+    osc(f,'triangle',i*0.1,0.18,0.2);
+  });
+}
+function sndRobo(){
+  // alarma descendente
+  oscRamp(900,80,'sawtooth',0,0.4,0.38);
+  oscRamp(440,660,'square',0.15,0.22,0.22);
+  // golpe bajo
+  oscRamp(120,40,'sine',0,0.3,0.3);
+}
+function sndIA(){
+  // 4 pitidos electrónicos ascendentes
+  [400,520,640,760].forEach((f,i)=>{ osc(f,'sine',i*0.07,0.1,0.1); });
+}
+function sndIAResp(){
+  // pequeña melodía de "respuesta recibida"
+  [800,600,700]  .forEach((f,i)=>{ osc(f,'sine',i*0.08,0.1,0.12); });
+}
+function sndIntelSelect(){
+  // pop suave + harmónico
+  oscRamp(300,600,'sine',0,0.12,0.15);
+  oscRamp(600,1000,'sine',0.04,0.1,0.08);
+}
+function sndNoIntel(){
+  // sonido de error
+  oscRamp(400,150,'sawtooth',0,0.25,0.3);
+  oscRamp(300,100,'sawtooth',0.1,0.2,0.25);
+}
+function sndSacarTurno(){ sndTurnoPropio(); }
+function sndRobarExito(){ sndRobo(); }
+function sndFormConfirm(){ sndConfirm(); }
+
+// CALOR — cada nivel diferente
+function sndCalor1(){ oscRamp(280,360,'sine',0,0.15,0.09); }
+function sndCalor2(){
+  oscRamp(200,280,'sawtooth',0,0.12,0.12);
+  oscRamp(200,280,'sawtooth',0.14,0.12,0.12);
+}
+function sndCalor3(){
+  [0,0.09,0.18].forEach(d=>{ oscRamp(180,80,'sawtooth',d,0.12,0.18); });
+}
+function sndCalor4(){
+  noise(0.15,0.5);
+  oscRamp(700,50,'sawtooth',0,0.22,0.3);
+}
+
+// AVIÓN
+function sndAvionBaja(){ oscRamp(800,35,'sawtooth',0,1.8,0.22); }
+function sndExplosion(){
+  noise(0.8,0.8);
+  oscRamp(120,18,'sine',0,0.6,0.5);
+}
+function sndBloqueo(){
+  // sirena corta
+  [0,0.2,0.4].forEach(d=>{ oscRamp(400,600,'square',d,0.18,0.15); });
+}
+
+// GOKU
+function sndGokuEntra(){
+  // melodía épica de 8 notas
+  [[196,0],[220,.12],[246,.24],[294,.36],[349,.5],[392,.65],[440,.82],[523,1.0]]
+    .forEach(([f,d])=>{ osc(f,'square',d,0.17,0.16); });
+  // bajo de impacto al final
+  setTimeout(()=>{ oscRamp(55,38,'sine',0,0.5,0.5); },1100);
+}
+function sndGokuCarga(){
+  oscRamp(80,240,'sawtooth',0,0.5,0.15);
+  // shimmer
+  oscRamp(1200,800,'sine',0,0.4,0.06);
+}
+function sndGokuFinal(){
+  [880,1080,1280,1480,1680].forEach((f,i)=>{ osc(f,'square',i*.05,0.14,0.2); });
+  noise(0.5,0.6);
+  oscRamp(60,20,'sine',0,0.4,0.4);
+}
+
+// =========================================================
+// ESTADO
+// =========================================================
+const SK='rbt_s6', NK='rbt_n6';
+let miNombre='', intelElegida='', motivoElegido='';
+let tengoTurno=false, defensaNivel=0, defInterval=null;
+let iaCooldown=false, bloqueado=false, bloqInterval=null;
+let ultimoCalorNivel=-1;
+// Para avión: contador de NIVELES acumulados protegiendo (solo crece desde nivel 8)
+let nivelesAltos=0;
+let avionProbActual=0;
+
+const paisBanderas={'Colombia':'🇨🇴','México':'🇲🇽','Argentina':'🇦🇷','Chile':'🇨🇱','Perú':'🇵🇪','Venezuela':'🇻🇪','Ecuador':'🇪🇨','Brasil':'🇧🇷','España':'🇪🇸','Francia':'🇫🇷','Alemania':'🇩🇪','Italia':'🇮🇹','Japón':'🇯🇵','Corea':'🇰🇷','Canadá':'🇨🇦','Australia':'🇦🇺','Noruega':'🇳🇴','Suecia':'🇸🇪','Portugal':'🇵🇹'};
+const paises=['Brasil','Japón','Alemania','Canadá','Australia','Corea','Noruega','Suecia','Argentina','España','México','Francia','Italia','Colombia','Chile','Perú','Portugal'];
+const tiempos=['2 minutos','4 horas','3 años','mañana','cuando el sistema quiera','en breve (mentira)','nunca jamás','cuando Goku quiera','después del almuerzo','en la próxima vida'];
+const motivosDetectados=['No sé qué hago con mi vida','Crisis existencial profunda','Vine a ver qué había','Aburrimiento nivel 100','Me perdí y entré aquí','Evitar hablar con personas','Busca sentido a su existencia','El wifi no funciona','Consulta sin importancia','Reclamo sin fundamento','Nadie lo sabe, ni él mismo'];
+const sinIntelMsgs=['Se nota que no tienes cerebro por no elegir nivel 🙃','¿Para qué elegir, si igual no lo tiene? 💀','El sistema detectó ausencia total de cerebro.','Ni para hacer click te alcanzó el IQ.','El formulario llora porque olvidaste lo más importante.','El pez dorado recuerda más cosas que tú.','Diomar dice que te cobran extra por no elegir.'];
+const animalesPorIntel={
+  mucho:[{e:'🐬',n:'Delfín',d:'Muy listo, sí. Y aun así aquí, en una fila como cualquier mortal.'},{e:'🐙',n:'Pulpo',d:'8 brazos y ninguno alcanzó a guardar el turno a tiempo.'},{e:'🦅',n:'Águila',d:'Visión perfecta. No viste venir que te iban a robar el turno.'},{e:'🐘',n:'Elefante',d:'Memoria prodigiosa. ¿Por qué olvidaste proteger tu número?'},{e:'🦊',n:'Zorro',d:'Muy astuto. Y aun así aquí esperando en la fila más caótica.'},{e:'🦁',n:'León',d:'Rey de la sabana. Aquí solo eres el rey de la fila y ni eso.'},{e:'🐺',n:'Lobo',d:'Feroz y estratégico. Tu turno igual lo van a robar, jefe.'},{e:'🦈',n:'Tiburón',d:'Depredador nato. Excepto en filas, donde eres la presa.'}],
+  normal:[{e:'🐶',n:'Perro',d:'Solo piensas en huesos y en morder traseros. Día normal de perro.'},{e:'🐱',n:'Gato',d:'Solo piensas en dormir 20 horas y tirar cosas al suelo por diversión.'},{e:'🐇',n:'Conejo',d:'Solo piensas en saltar y reproducirte. Foco, que hay fila.'},{e:'🦆',n:'Pato',d:'Solo piensas en el agua y en graznar sin que nadie te pida opinión.'},{e:'🐾',n:'Mapache',d:'Solo piensas en robar comida de basureros. Al menos eres honesto.'},{e:'🐨',n:'Koala',d:'Solo piensas en dormir más. Llevas dormido desde que llegaste.'},{e:'🐻',n:'Oso',d:'Solo piensas en miel y en dormir seis meses. Te entendemos.'},{e:'🦝',n:'Tejón',d:'Solo piensas en meterte donde no te llaman. Como en esta fila.'}],
+  poco:[{e:'🐔',n:'Gallina',d:'Solo piensas en alejarte del peligro y en poner huevos. Cloc cloc.'},{e:'🐟',n:'Pez dorado',d:'Solo piensas en nadar. Olvidaste el turno hace 3 segundos.'},{e:'🐑',n:'Oveja',d:'Solo sigues al de adelante sin preguntar nada. Balido.'},{e:'🐀',n:'Ratón',d:'Solo piensas en queso. Todo es queso. El queso es la vida entera.'},{e:'🪲',n:'Escarabajo',d:'Solo empujas cosas sin saber por qué. Ni sabes qué es una fila.'},{e:'🐛',n:'Oruga',d:'Solo piensas en comer hojas. Ni sabes que hay algo más allá.'},{e:'🦗',n:'Grillo',d:'Solo piensas en hacer ruido de noche cuando todos quieren dormir.'},{e:'🐌',n:'Caracol',d:'Solo piensas en moverte lento. El turno llegará en 3 años. Perfecto.'}]
+};
+const mensajesIA=['Oye {n}, ¿en serio no tienes nada mejor que hacer?','{n} la IA sabe que desayunaste mal hoy.','El sistema detectó que {n} huele a desesperación total.','Análisis: {n} va a perder el turno. Siempre pierde.','La IA recomienda ir a dormir, {n}. Ahora. En serio.','Tu turno tiene la esperanza de vida de un helado al sol.','{n}, el sistema te clasifica como víctima fácil premium.','Probabilidad de que te atiendan: 2%. La otra opción es pizza.','😴 Zzz... tu turno {n}. Muy mal. Zzz...','GOKU LE GANA A TODOS, especialmente a {n}.','IQ del turno de {n}: igual al de una piedra húmeda.','El dado salió mejor suerte en otra vida, {n}.','Error 404: suerte de {n} no encontrada.','El sistema manda un abrazo a {n}... de lástima.','{n} fue clasificado como entretenimiento de la fila.','Análisis final: pato. Eres pato puro, {n}.','La IA necesita café para los problemas de {n}.','La IA te mira, {n}. Le da mucha risa lo que ve.','Tu turno fue enviado por error a otro país.','La casa siempre gana. Tú no eres la casa, {n}.','Un pájaro se comió tus posibilidades. El sistema lo vio.','Diomar dice que {n} tiene el turno más feo que ha visto.','El sistema sugiere rendirse. En general, rendirse, {n}.'];
+const avionMensajes=[{m:'✈️ UN AVIÓN SE ESTRELLÓ EN LA FILA',s:'El tiempo de espera ahora es: eterno. Lo sentimos.'},{m:'💥 IMPACTO DETECTADO EN EL SISTEMA',s:'Todos los turnos salieron volando literalmente.'},{m:'✈️ EL AVIÓN SE LLEVÓ TODOS LOS TURNOS',s:'La aerolínea no se hace responsable.'},{m:'🔥 CAÍDA DE AERONAVE EN EL SISTEMA',s:'El piloto era el turno número 1. Era inocente.'},{m:'✈️ EL PILOTO ERA UN LADRÓN DE TURNOS',s:'La justicia del cielo actuó. Turnos reiniciados.'}];
+
+function getR(a){ return a[Math.floor(Math.random()*a.length)]; }
+function getS(){ try{ return JSON.parse(localStorage.getItem(SK))||{d:'',r:0,p:0}; }catch(e){ return{d:'',r:0,p:0}; } }
+function setS(s){ localStorage.setItem(SK,JSON.stringify(s)); }
+function getNots(){ try{ return JSON.parse(localStorage.getItem(NK))||[]; }catch(e){ return[]; } }
+function addNot(t,tipo){ let a=getNots(); a.unshift({t,tipo:tipo||'ok',ts:Date.now()}); if(a.length>20)a=a.slice(0,20); localStorage.setItem(NK,JSON.stringify(a)); }
+
+// =========================================================
+// UI: iniciar con un gesto para desbloquear audio
+// =========================================================
+let audioUnlocked=false;
+document.addEventListener('click',()=>{ if(!audioUnlocked){ ctx(); audioUnlocked=true; } },{once:true});
+document.addEventListener('touchstart',()=>{ if(!audioUnlocked){ ctx(); audioUnlocked=true; } },{once:true, passive:true});
+
+function elegirIntel(v){
+  sndIntelSelect();
+  intelElegida=v;
+  document.querySelectorAll('.intel-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('intel-'+v).classList.add('selected');
+  document.getElementById('noIntelMsg').style.display='none';
+}
+
+document.getElementById('genero').addEventListener('change',()=>sndSel());
+document.getElementById('motivo').addEventListener('change',()=>sndSel());
+document.querySelectorAll('input').forEach(inp=>inp.addEventListener('focus',()=>sndClick()));
+
+function confirmar(){
+  sndClick();
+  if(!intelElegida){
+    sndNoIntel();
+    let el=document.getElementById('noIntelMsg');
+    el.innerText=getR(sinIntelMsgs);
+    el.style.display='block';
+    return;
+  }
+  miNombre=document.getElementById('nombre').value.trim()||'Anónimo';
+  let genero=document.getElementById('genero').value;
+  motivoElegido=document.getElementById('motivo').value;
+  let gd=genero==='Hombre'?'Mujer':genero==='Mujer'?'Hombre':'Robot interplanetario';
+  let edad=Math.floor(Math.random()*80)+10;
+  let pais=getR(paises);
+  let bandera=paisBanderas[pais]||'';
+  let motivo=getR(motivosDetectados);
+  document.getElementById('resultados').innerHTML='✅ Datos recibidos:<br>👤 Nombre: <span>'+miNombre+'</span><br>🔍 Género detectado: <span>'+gd+'</span><br>📅 Edad detectada: <span>'+edad+' años</span><br>🌍 País detectado: <span>'+bandera+' '+pais+'</span><br>📋 Motivo detectado: <span>'+motivo+'</span>';
+  let animal=getR(animalesPorIntel[intelElegida]);
+  document.getElementById('animalEmojiBig').innerText=animal.e;
+  document.getElementById('animalNombre').innerText=animal.e+' Tu nivel intelectual: '+animal.n;
+  document.getElementById('animalDesc').innerText=animal.d;
+  document.getElementById('animalCard').style.display='block';
+  sndFormConfirm();
+  document.getElementById('formulario').style.display='none';
+  document.getElementById('turnos').style.display='block';
+  renderUI();
+  setInterval(renderUI,1500);
+}
+
+function renderUI(){
+  let s=getS();
+  document.getElementById('robosNum').innerText=s.r||0;
+  document.getElementById('peleasNum').innerText=s.p||0;
+  let prob=Math.min(Math.floor((s.r||0)*8),100);
+  document.getElementById('probBar').style.width=prob+'%';
+  document.getElementById('probVal').innerText=prob+'%';
+  let td=document.getElementById('turnoDisplay'),tt=document.getElementById('turno'),dt=document.getElementById('duenoTxt');
+  let bs=document.getElementById('btnSacar'),br=document.getElementById('btnRobar');
+  if(!s.d){
+    td.className='turno-display'; tt.className='turno-num neutro-txt'; tt.innerText='— Sin turno —';
+    dt.innerHTML='Nadie tiene el turno aún'; bs.disabled=false; br.disabled=bloqueado; tengoTurno=false;
+  }else if(s.d===miNombre){
+    td.className='turno-display verde'; tt.className='turno-num verde-txt'; tt.innerText='🎉 ¡Tú tienes el turno #1!';
+    dt.innerHTML='Lo tienes tú: <span>'+miNombre+'</span>'; bs.disabled=true; br.disabled=true; tengoTurno=true;
+  }else{
+    td.className='turno-display rojo'; tt.className='turno-num rojo-txt'; tt.innerText='🔥 '+s.d+' tiene el turno';
+    dt.innerHTML='Lo tiene: <span>'+s.d+'</span>'; bs.disabled=true; br.disabled=bloqueado; tengoTurno=false;
+  }
+  renderNots();
+}
+
+let lastNots=0;
+function renderNots(){
+  let arr=getNots(); if(arr.length===lastNots) return; lastNots=arr.length;
+  let c=document.getElementById('notificaciones'); c.innerHTML='';
+  arr.slice(0,10).forEach(n=>{ let d=document.createElement('div'); d.className='notif-item'+(n.tipo==='robo'?' notif-robo':''); d.innerText=n.t; c.appendChild(d); });
+}
+
+function sacarTurno(){
+  sndClick();
+  let s=getS(); if(s.d) return;
+  s.d=miNombre; setS(s);
+  document.getElementById('espera').innerText='⏳ Tiempo estimado: '+getR(tiempos);
+  addNot('✅ '+miNombre+' sacó el turno #1','ok');
+  setTimeout(sndSacarTurno, 80);
+  renderUI();
+}
+
+function robarTurno(){
+  sndClick();
+  if(bloqueado) return;
+  let s=getS(); if(!s.d||s.d===miNombre) return;
+  let anterior=s.d;
+  s.d=miNombre; s.r=(s.r||0)+1; s.p=(s.p||0)+1; setS(s);
+  addNot('🚨 '+miNombre+' le robó el turno a '+anterior+'!','robo');
+  setTimeout(sndRobarExito, 60);
+  document.getElementById('ranking').innerText='😈 '+miNombre;
+  renderUI();
+  let prob=Math.min(Math.floor(s.r*8),100);
+  if(prob>=100||(prob>40&&Math.random()<prob/100)) setTimeout(activarGoku,500);
+}
+
+// =========================================================
+// BOTÓN PROTEGER — avión ligado a nivel de calor
+// =========================================================
+const calorNiveles=[
+  {cls:'',     lbl:'🛡️ Mantener para proteger turno', color:'#34d399', pct:0,   snd:null},
+  {cls:'c1',   lbl:'🌡️ Tibio... sigue presionando',   color:'#ffd200', pct:25,  snd:sndCalor1},
+  {cls:'c2',   lbl:'🔥 ¡Calentando! ¡No sueltes!',    color:'orange',  pct:55,  snd:sndCalor2},
+  {cls:'c3',   lbl:'🚨 ¡MUY CALIENTE! ¡PELIGRO!',     color:'#e74c3c', pct:80,  snd:sndCalor3},
+  {cls:'c4',   lbl:'💥 ¡EL BOTÓN ESTÁ ARDIENDO!',     color:'red',     pct:100, snd:sndCalor4},
+];
+
+let protBtn=document.getElementById('protegerBtn');
+
+function iniciarCalor(){
+  sndClick();
+  document.getElementById('calorMeter').style.display='block';
+  ultimoCalorNivel=-1;
+  defInterval=setInterval(()=>{
+    defensaNivel++;
+
+    // nivel visual (0-4)
+    let nivel=Math.min(Math.floor(defensaNivel/4),4);
+    let n=calorNiveles[nivel];
+
+    // sonido al cambiar de nivel
+    if(nivel!==ultimoCalorNivel){
+      ultimoCalorNivel=nivel;
+      if(n.snd) n.snd();
+    }
+
+    protBtn.className='proteger-btn'+(n.cls?' '+n.cls:'');
+    protBtn.innerText=n.lbl;
+    document.getElementById('calorBar').style.width=n.pct+'%';
+    document.getElementById('calorBar').style.background=n.color;
+    document.getElementById('calorLabel').innerText=n.lbl;
+    document.getElementById('calorLabel').style.color=n.color;
+    document.getElementById('defensa').innerText='🛡️ '+(miNombre||'Tú')+' protegiendo... Nivel '+defensaNivel+(defensaNivel>14?' 🔥 SOSPECHOSO ARDIENTE':'');
+
+    // ---- AVIÓN: empieza a contar desde nivel 8 ----
+    if(defensaNivel>=8){
+      // cada tick extra desde nivel 8 suma ~5% de probabilidad
+      nivelesAltos = defensaNivel - 7;
+      avionProbActual = Math.min(nivelesAltos * 5, 95);
+      document.getElementById('avionProbSec').style.display='block';
+      document.getElementById('avionProbFill').style.width=avionProbActual+'%';
+      document.getElementById('avionProbVal').innerText=Math.round(avionProbActual)+'%';
+
+      // cada tick (0.5s) tiramos el dado
+      if(Math.random()*100 < avionProbActual/10){
+        soltarCalor();
+        setTimeout(activarAvion, 300);
+      }
+    }
+  },500);
+}
+
+function soltarCalor(){
+  if(defInterval){ clearInterval(defInterval); defInterval=null; }
+  defensaNivel=0; ultimoCalorNivel=-1;
+  nivelesAltos=0; avionProbActual=0;
+  protBtn.className='proteger-btn';
+  protBtn.innerText='🛡️ Mantener para proteger turno';
+  document.getElementById('defensa').innerText='';
+  document.getElementById('calorMeter').style.display='none';
+  document.getElementById('calorBar').style.width='0%';
+  document.getElementById('avionProbSec').style.display='none';
+  document.getElementById('avionProbFill').style.width='0%';
+  document.getElementById('avionProbVal').innerText='0%';
+}
+
+protBtn.addEventListener('mousedown', iniciarCalor);
+protBtn.addEventListener('mouseup', soltarCalor);
+protBtn.addEventListener('mouseleave', soltarCalor);
+protBtn.addEventListener('touchstart', e=>{ e.preventDefault(); iniciarCalor(); }, {passive:false});
+protBtn.addEventListener('touchend', soltarCalor);
+protBtn.addEventListener('touchcancel', soltarCalor);
+
+// =========================================================
+// GOKU ÉPICO
+// =========================================================
+function crearParticulas(){
+  let cont=document.getElementById('gokuParticles'); cont.innerHTML='';
+  const cols=['#ffdd00','#ff8800','#ff4400','#ffffff','#ffaa00'];
+  for(let i=0;i<30;i++){
+    let p=document.createElement('div'); p.className='goku-particle';
+    let tx=(Math.random()-0.5)*300+'px', ty=(Math.random()-0.5)*300+'px';
+    p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;background:${getR(cols)};width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;--tx:${tx};--ty:${ty};animation-delay:${Math.random()*1.5}s;animation-duration:${1+Math.random()}s;`;
+    cont.appendChild(p);
+  }
+}
+function flash(){
+  let f=document.getElementById('gokuFlash');
+  f.classList.remove('boom'); void f.offsetWidth; f.classList.add('boom');
+}
+function activarGoku(){
+  crearParticulas(); flash();
+  let ov=document.getElementById('gokuOverlay');
+  let bar=document.getElementById('gokuBar');
+  let status=document.getElementById('gokuStatus');
+  setTimeout(()=>{ ov.classList.add('show'); sndGokuEntra(); }, 80);
+  const fases=[
+    {t:0,    msg:'Detecté demasiadas peleas aquí...', snd:sndGokuCarga},
+    {t:1400, msg:'¡Cargando Genkidama!',              snd:sndGokuCarga},
+    {t:2600, msg:'¡KAAA-MEEE-HAAA-MEEE...!',          snd:sndGokuCarga},
+    {t:3700, msg:'¡TODOS CONTRIBUYAN!',               snd:sndGokuCarga},
+    {t:4700, msg:'¡¡¡HAAAAAAAAAAAAA!!!',              snd:sndGokuFinal},
+  ];
+  fases.forEach(f=>setTimeout(()=>{ status.innerText=f.msg; f.snd(); }, f.t));
+  let width=0;
+  let iv=setInterval(()=>{
+    width+=1.2; bar.style.width=width+'%';
+    if(width>=100){
+      clearInterval(iv);
+      status.innerText='💥 ¡GENKIDAMA LANZADA! ¡TODOS LOS TURNOS DESTRUIDOS!';
+      sndGokuFinal(); flash();
+      setS({d:'',r:0,p:0}); localStorage.setItem(NK,JSON.stringify([]));
+      tengoTurno=false;
+      setTimeout(()=>{
+        ov.classList.remove('show'); bar.style.width='0%';
+        addNot('⚡ Goku lanzó la Genkidama — todos los turnos destruidos','robo');
+        renderUI();
+      },2200);
+    }
+  },90);
+}
+
+// =========================================================
+// AVIÓN
+// =========================================================
+function activarAvion(){
+  soltarCalor(); // por si acaso
+  let ov=document.getElementById('avionOverlay');
+  let ae=document.getElementById('avionEmoji');
+  let ex=document.getElementById('avionExp');
+  let am=document.getElementById('avionMsg');
+  let as=document.getElementById('avionSub');
+  let datos=getR(avionMensajes);
+
+  ov.classList.add('show');
+  ae.style.display='block'; ex.style.display='none'; am.style.display='none'; as.style.display='none';
+  // reiniciar animación
+  ae.style.animation='none'; void ae.offsetWidth; ae.style.animation='avionCae 1.8s ease-in forwards';
+  sndAvionBaja();
+
+  setTimeout(()=>{
+    ae.style.display='none';
+    ex.style.display='block';
+    ex.style.animation='none'; void ex.offsetWidth; ex.style.animation='explota 0.6s ease-out forwards';
+    sndExplosion();
+    setTimeout(()=>{
+      am.innerText=datos.m; as.innerText=datos.s; am.style.display='block'; as.style.display='block';
+      let s=getS();
+      if(s.d===miNombre){ s.d=''; setS(s); tengoTurno=false; }
+      setTimeout(()=>{
+        ov.classList.remove('show');
+        addNot('✈️ Un avión bloqueó a '+miNombre+' por 15 segundos','robo');
+        activarBloqueo(15);
+        renderUI();
+      },2200);
+    },600);
+  },1800);
+}
+
+function activarBloqueo(seg){
+  bloqueado=true; sndBloqueo();
+  let bov=document.getElementById('bloqOverlay');
+  let bbar=document.getElementById('bloqBar');
+  let btiempo=document.getElementById('bloqTiempo');
+  document.getElementById('bloqTxt').innerText='El avión te bloqueó, '+miNombre+'. Espera '+seg+'s antes de volver a proteger.';
+  bov.classList.add('show');
+  bbar.style.transition='none'; bbar.style.width='100%'; void bbar.offsetWidth;
+  bbar.style.transition='width '+seg+'s linear'; bbar.style.width='0%';
+  let restante=seg; btiempo.innerText=restante+'s';
+  document.getElementById('btnRobar').disabled=true;
+  bloqInterval=setInterval(()=>{
+    restante--; btiempo.innerText=restante+'s';
+    if(restante<=0){
+      clearInterval(bloqInterval); bloqueado=false;
+      bov.classList.remove('show');
+      document.getElementById('btnRobar').disabled=false;
+      sndSel();
+      renderUI();
+    }
+  },1000);
+}
+
+// =========================================================
+// IA
+// =========================================================
+async function analizarIA(){
+  sndIA();
+  if(iaCooldown) return;
+  iaCooldown=true;
+  let btn=document.getElementById('btnIA'), dots=document.getElementById('iaDots');
+  let bur=document.getElementById('iaBubble'), cbar=document.getElementById('cooldownBar');
+  btn.disabled=true; dots.style.display='block'; bur.style.display='none';
+  let s=getS(); let txt='';
+  if(Math.random()>0.38){
+    let prompt='Eres la IA caótica del sistema RoboTurno. Estado: dueño="'+(s.d||'nadie')+'", robos='+(s.r||0)+'. Usuario: "'+miNombre+'", motivo: "'+motivoElegido+'". Responde con UN mensaje gracioso, absurdo y burlón. Máximo 2 oraciones. Solo el mensaje.';
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:120,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      txt=data.content&&data.content[0]?data.content[0].text:getR(mensajesIA).replace(/{n}/g,miNombre);
+    }catch(e){ txt=getR(mensajesIA).replace(/{n}/g,miNombre); }
+  }else{
+    await new Promise(r=>setTimeout(r,800+Math.random()*600));
+    txt=getR(mensajesIA).replace(/{n}/g,miNombre);
+  }
+  sndIAResp();
+  dots.style.display='none'; bur.innerText='🤖 '+txt; bur.style.display='block'; btn.disabled=false;
+  let dur=4000, start=Date.now();
+  let tick=setInterval(()=>{
+    let e=Date.now()-start; cbar.style.width=Math.max(0,100-(e/dur*100))+'%';
+    if(e>=dur){ clearInterval(tick); cbar.style.width='0%'; iaCooldown=false; }
+  },50);
+}
+</script>
+</body>
+</html>
